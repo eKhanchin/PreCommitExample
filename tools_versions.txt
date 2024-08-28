@@ -1,2 +1,2 @@
-my_tool=1.0.46
+my_tool=1.0.47
 my_tool_2=1.0.9
