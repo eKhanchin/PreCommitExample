@@ -1,4 +1,4 @@
-#!C:\Users\ekhanchi\AppData\Local\Programs\Python\Python39\python
+#!/usr/bin/python3
 
 from datetime import datetime
 import os
