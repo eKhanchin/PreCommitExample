@@ -1,0 +1,20 @@
+#!C:\Users\ekhanchi\AppData\Local\Programs\Python\Python39\python
+
+import os
+
+
+def main():
+	script_directory = os.getcwd()
+	file_name = 'tools_versions.txt'
+	versions_file = script_directory + '/' + file_name
+
+	command = f'git add {versions_file}'
+	os.system(command)
+
+	command = f'git commit . -m "Updated {file_name} file"'
+	os.system(command)
+
+
+if __name__ == '__main__':
+	main()
+	exit(0)

@@ -1,0 +1,91 @@
+#!C:\Users\ekhanchi\AppData\Local\Programs\Python\Python39\python
+
+from datetime import datetime
+import os
+
+
+def main():
+	script_directory = os.getcwd()
+	versions_file = script_directory + '/tools_versions.txt'
+
+	tools_versions = get_tools_versions(versions_file)
+	is_changed = update_changed_versions(tools_versions)
+	if not is_changed:
+		exit(0)
+
+	save_tools_versions(versions_file, tools_versions)
+
+
+def get_tools_versions(file: str) -> dict:
+	""" Reads tools' names and versions from a file into a dictionary.
+
+	Parameters:
+		file - Path to a file with tools and versions.
+	
+	Returns:
+		A dictionary where a key is a tool name and value is its version.
+	"""
+
+	tools_versions = {}
+	with open(file, 'r') as file:
+		for line in file:
+			line = line.split('\n')[0]
+			tool_name, version = line.split('=')
+			tools_versions[tool_name] = version
+	
+	return tools_versions
+
+
+def update_changed_versions(tools_versions: dict) -> bool:
+	""" Updates tools' version in a given dictionary according to the
+	changes caught by Git.
+
+	Parameters:
+		tools_versions - A dictionary where a key is a tool name and
+		value is its version.
+	"""
+
+	# Gets tools' names via Git
+	git_command = 'git diff --cached --name-only'
+	changed_files = os.popen(git_command).read().splitlines()
+	if not changed_files:
+		return False
+	
+	# Updates only the tools mentioned in the versions file
+	is_changed = False
+	current_time = datetime.now()
+	current_time = current_time.strftime('%y.%m.%d')
+	changed_tools = [tool.split('/')[0] for tool in changed_files]
+	for tool_name in changed_tools:
+		version = tools_versions.get(tool_name, None)
+		if not version:
+			continue
+		
+		is_changed = True
+		version = current_time
+		tools_versions[tool_name] = version
+
+	return is_changed
+
+
+def save_tools_versions(file: str, tools_versions: dict):
+	""" Saves updated tools' names and versions from a dictionary into
+	a file.
+
+	Parameters:
+		file - Path to a file with tools and versions.
+		tools_versions - A dictionary where a key is a tool name and
+		value is its version.
+	"""
+
+	data = ''
+	for tool_name, version in tools_versions.items():
+		data += f'{tool_name}={version}\n'
+	
+	with open(file, 'w') as file:
+		file.write(data)
+
+
+if __name__ == '__main__':
+	main()
+	exit(0)
